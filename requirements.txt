@@ -1,0 +1,23 @@
+# Core data analysis and visualization libraries
+numpy
+pandas
+matplotlib
+seaborn
+
+# Machine Learning and Deep Learning libraries
+scikit-learn
+tensorflow
+joblib
+
+# Image processing library (Task 3: Handwritten Character Recognition)
+opencv-python
+
+# Audio processing library (Task 2: Emotion Recognition from Speech)
+librosa
+
+# Web deployment framework (to serve models later)
+flask
+
+# Notebook interactive development environment
+jupyter
+ipykernel

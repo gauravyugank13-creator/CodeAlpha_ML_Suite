@@ -1,0 +1,11 @@
+==================================================
+  MNIST Prediction Pipeline Examples Report
+==================================================
+
+Filename                       | Prediction | Confidence
+-------------------------------------------------------
+sample_digit_0.png             | 0          | 99.99%
+sample_digit_1.png             | 1          | 100.00%
+sample_digit_2.png             | 2          | 100.00%
+sample_digit_3.png             | 3          | 57.62%
+sample_digit_4.png             | 4          | 99.95%

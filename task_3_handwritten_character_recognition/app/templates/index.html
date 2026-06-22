@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Handwritten Digit Recogniser — Task 3</title>
+    <!-- Google Fonts: Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Link styles.css -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="background-glow-left"></div>
+    <div class="background-glow-right"></div>
+
+    <div class="dashboard-container">
+        <!-- Header Section -->
+        <header class="app-header">
+            <div class="logo-area">
+                <span class="logo-icon"><i class="fa-solid fa-brain"></i></span>
+                <div class="logo-text">
+                    <h1>DigitCognition</h1>
+                    <p>CodeAlpha ML Suite — Task 3</p>
+                </div>
+            </div>
+            <div class="header-badge">
+                <span class="status-dot"></span>
+                <span>Model Active</span>
+            </div>
+        </header>
+
+        <!-- Main Dashboard Layout -->
+        <main class="dashboard-main">
+            <!-- Left Side: Interactive Input Panel -->
+            <section class="control-panel glass-card">
+                <div class="card-header">
+                    <h2><i class="fa-solid fa-pen-nib"></i> Choose Input Method</h2>
+                    <p>Draw a digit or upload an image file to begin prediction.</p>
+                </div>
+
+                <!-- Tabs to switch between Draw and Upload -->
+                <div class="tab-container">
+                    <button id="tab-draw-btn" class="tab-btn active" onclick="switchTab('draw')">
+                        <i class="fa-solid fa-palette"></i> Draw Digit
+                    </button>
+                    <button id="tab-upload-btn" class="tab-btn" onclick="switchTab('upload')">
+                        <i class="fa-solid fa-cloud-arrow-up"></i> Upload File
+                    </button>
+                </div>
+
+                <!-- Tab content: Drawing Canvas -->
+                <div id="tab-draw-content" class="tab-content active">
+                    <div class="canvas-container">
+                        <canvas id="digit-canvas" width="280" height="280"></canvas>
+                    </div>
+                    <div class="canvas-actions">
+                        <button id="clear-canvas-btn" class="btn btn-secondary">
+                            <i class="fa-solid fa-trash-can"></i> Clear Canvas
+                        </button>
+                        <button id="predict-draw-btn" class="btn btn-primary">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> Predict Drawing
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tab content: File Upload -->
+                <div id="tab-upload-content" class="tab-content">
+                    <div id="drop-zone" class="upload-drop-zone">
+                        <i class="fa-solid fa-file-image upload-icon"></i>
+                        <p class="drop-text">Drag & drop your file here</p>
+                        <p class="format-text">Supports PNG, JPG, JPEG (Max 2MB)</p>
+                        <span class="or-separator">or</span>
+                        <label for="file-input" class="file-picker-label">
+                            <i class="fa-solid fa-folder-open"></i> Browse Files
+                        </label>
+                        <input type="file" id="file-input" accept=".png, .jpg, .jpeg" style="display: none;">
+                    </div>
+                    
+                    <div id="file-details" class="file-details-container" style="display: none;">
+                        <div class="file-info">
+                            <i class="fa-solid fa-file-lines file-icon"></i>
+                            <div class="file-metadata">
+                                <span id="file-name" class="file-name-text">filename.png</span>
+                                <span id="file-size" class="file-size-text">0.0 KB</span>
+                            </div>
+                            <button id="remove-file-btn" class="remove-btn">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                        <button id="predict-file-btn" class="btn btn-primary full-width">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> Predict Uploaded File
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right Side: Results Panel -->
+            <section class="results-panel glass-card">
+                <div class="card-header">
+                    <h2><i class="fa-solid fa-square-poll-vertical"></i> Inference Output</h2>
+                    <p>Predictions are executed instantly using a lightweight CNN model.</p>
+                </div>
+
+                <!-- Placeholder state before prediction -->
+                <div id="result-placeholder" class="result-placeholder-state">
+                    <div class="pulse-ring"><i class="fa-solid fa-chart-line"></i></div>
+                    <h3>Awaiting Input</h3>
+                    <p>Draw a digit or upload a file and click predict to display model classification metrics here.</p>
+                </div>
+
+                <!-- Loader Indicator -->
+                <div id="result-loader" class="result-loader-state" style="display: none;">
+                    <div class="spinner"></div>
+                    <h3>Running CNN Inference...</h3>
+                    <p>Executing forward pass through Conv2D and Dense layers.</p>
+                </div>
+
+                <!-- Error Display -->
+                <div id="error-display" class="error-state" style="display: none;">
+                    <i class="fa-solid fa-circle-exclamation error-icon"></i>
+                    <h3>Prediction Error</h3>
+                    <p id="error-message">Error details go here.</p>
+                </div>
+
+                <!-- Prediction output state -->
+                <div id="result-output" class="result-output-state" style="display: none;">
+                    <div class="prediction-card-row">
+                        <!-- Huge Number Block -->
+                        <div class="digit-box">
+                            <span class="box-label">Digit</span>
+                            <span id="predicted-digit-val" class="digit-val">-</span>
+                        </div>
+                        <!-- Confidence Score Block -->
+                        <div class="confidence-box">
+                            <span class="box-label">Confidence</span>
+                            <div class="progress-ring-container">
+                                <span id="predicted-conf-val" class="conf-val">0.0%</span>
+                                <div class="progress-bar-background">
+                                    <div id="progress-bar-fill" class="progress-bar-fill-element" style="width: 0%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Softmax probabilities table -->
+                    <div class="probabilities-container">
+                        <h3>Softmax Probability Vector</h3>
+                        <div class="probabilities-grid" id="prob-bars-grid">
+                            <!-- Programmatically populated bars 0-9 -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="app-footer">
+            <p>&copy; 2026 CodeAlpha Machine Learning Internship. Optimized for low latency & memory footprint.</p>
+        </footer>
+    </div>
+
+    <!-- Script assets -->
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

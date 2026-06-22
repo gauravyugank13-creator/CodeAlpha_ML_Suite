@@ -1,0 +1,44 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# OS metadata
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+*.venv
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# IDE configurations (VS Code, PyCharm, etc.)
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+
+# Python distribution and build outputs
+build/
+dist/
+*.egg-info/
+lib/
+lib64/
+
+# Local/secrets configurations
+.env
+*.log
+
+# MNIST raw/processed data paths and .npy datasets
+task_3_handwritten_character_recognition/data/raw/
+task_3_handwritten_character_recognition/data/processed/
+*.npy

@@ -293,4 +293,28 @@ task_3_handwritten_character_recognition/
 - ✅ **Visual validation plot**: Generated and saved `results/plots/preprocessing_comparison.png` displaying the three stages of processing for each sample.
 - ✅ **Web application regression check**: Confirmed that all 7 Flask app unit tests continue to pass successfully.
 
+---
 
+## [2026-06-23 03:45:00 +05:30] GitHub Repository Cleanup
+
+### Root Cause
+GitHub rejected pushes to the remote repository because the initial commit included large binary dataset files, specifically:
+- `task_3_handwritten_character_recognition/data/processed/x_train.npy` (179.44 MB)
+This file exceeded GitHub's hard file size limit of 100 MB. Although the file was unstaged/removed from tracking in a later commit index, the original root commit object containing the file remained in the Git DAG history.
+
+### Actions Taken
+1. **Exclusion Rules:** Updated `.gitignore` to ignore:
+   - `task_3_handwritten_character_recognition/data/raw/`
+   - `task_3_handwritten_character_recognition/data/processed/`
+   - `*.npy`
+2. **Orphan History Rewrite:** Checked out an `--orphan` branch (`clean-main`), unstaged all `.npy` dataset files and directory paths via `git rm --cached`, and staged the updated `.gitignore`.
+3. **Commit Metadata Preservation:** Committed the clean codebase under the original commit message ("Task 3 completed - Handwritten Character Recognition"), authorship, and timestamp.
+4. **Tag Realignment:** Deleted the old `task3-complete` tag and recreated it pointing to the clean root commit.
+5. **Garbage Collection:** Ran aggressive garbage collection (`git gc --prune=now --aggressive`) to permanently remove dangling packfiles containing the large files from the local git database.
+6. **Remote Deployment:** Force-pushed the clean branch and tag to the empty remote repository (`origin main`).
+
+### Verification Performed
+- Checked git tracked files index: `git ls-files | findstr ".npy"` returns empty (confirmed no `.npy` files are tracked).
+- Checked disk files: verified all 8 `.npy` datasets are still intact in their local paths.
+- Ran tests: all 7 Flask app tests (`test_flask_app.py`) and the digit prediction validation suite (`validate_prediction_pipeline.py`) run and pass successfully.
+- Verified remote push: origin received the branch `main` and tag `task3-complete` successfully.

@@ -1,0 +1,25 @@
+==========================================================
+    Task 2 Speech Emotion Classifier Leaderboard Ranking  
+==========================================================
+
+Primary Selection Metric: Weighted F1-score
+Secondary Selection Metric: Accuracy
+
+1. Model: mlp
+   - Weighted F1-Score: 0.574422
+   - Accuracy:          0.572917
+   - Weighted Precision: 0.585487
+   - Weighted Recall:    0.572917
+
+2. Model: random_forest
+   - Weighted F1-Score: 0.535947
+   - Accuracy:          0.541667
+   - Weighted Precision: 0.547687
+   - Weighted Recall:    0.541667
+
+3. Model: svm
+   - Weighted F1-Score: 0.484194
+   - Accuracy:          0.475694
+   - Weighted Precision: 0.517480
+   - Weighted Recall:    0.475694
+

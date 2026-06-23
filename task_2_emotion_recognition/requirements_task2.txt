@@ -1,0 +1,15 @@
+# Audio Processing & Feature Extraction
+librosa
+soundfile
+scipy
+numpy
+
+# Machine Learning & Data Processing
+pandas
+scikit-learn
+joblib
+
+# Verification & Serving
+matplotlib
+seaborn
+flask

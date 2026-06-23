@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VibeVoice - Speech Emotion Recognition</title>
+    <!-- Google Fonts Outfit & FontAwesome Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <!-- Background Radial Glows -->
+    <div class="background-glow-left"></div>
+    <div class="background-glow-right"></div>
+
+    <div class="dashboard-container">
+        <!-- App Header Logo Area -->
+        <header class="app-header">
+            <div class="logo-area">
+                <div class="logo-icon">
+                    <i class="fa-solid fa-microphone-lines"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>VibeVoice</h1>
+                    <p>Acoustic Speech Emotion Classifier</p>
+                </div>
+            </div>
+            <div class="header-badge">
+                <span class="status-dot"></span>
+                <span>Active Model Loaded</span>
+            </div>
+        </header>
+
+        <!-- Main Form Glass Card -->
+        <main class="glass-card">
+            <div class="card-header">
+                <h2>Analyze Vocal Emotion</h2>
+                <p>Upload a vocal recording file to extract acoustic properties and classify the speaker's emotional state.</p>
+            </div>
+
+            <!-- Error Alerts Panel -->
+            {% if error %}
+            <div class="alert-error" id="error-alert">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                <span>{{ error }}</span>
+            </div>
+            {% endif %}
+
+            <!-- Prediction Upload Form -->
+            <form action="{{ url_for('predict') }}" method="POST" enctype="multipart/form-data" class="upload-form" id="analysis-form">
+                <!-- Dropzone Area -->
+                <div class="upload-drop-zone" id="drop-zone">
+                    <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
+                    <p class="drop-text">Drag & drop your voice recording here</p>
+                    <p class="format-text">Only WAV format is supported (max size: 5 MB)</p>
+                    
+                    <button type="button" class="file-select-btn" id="browse-btn">
+                        <i class="fa-solid fa-folder-open"></i> Browse Files
+                    </button>
+                    
+                    <input type="file" name="file" id="file-input" class="file-input" accept=".wav" required>
+                    
+                    <!-- Selected File Info Box -->
+                    <div class="selected-file-box" id="file-box">
+                        <div class="selected-file-info">
+                            <i class="fa-solid fa-file-audio"></i>
+                            <span id="selected-filename">filename.wav</span>
+                        </div>
+                        <button type="button" class="remove-file-btn" id="remove-btn">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit">
+                    <i class="fa-solid fa-chart-simple"></i> Classify Speech Emotion
+                </button>
+            </form>
+        </main>
+
+        <footer class="app-footer">
+            <p>&copy; 2026 CodeAlpha ML Suite - Speech Emotion Recognition Dashboard. Locked isolated environment.</p>
+        </footer>
+    </div>
+
+    <!-- Client-Side Form Interactive Script -->
+    <script>
+        const dropZone = document.getElementById("drop-zone");
+        const fileInput = document.getElementById("file-input");
+        const browseBtn = document.getElementById("browse-btn");
+        const fileBox = document.getElementById("file-box");
+        const selectedFilename = document.getElementById("selected-filename");
+        const removeBtn = document.getElementById("remove-btn");
+        const form = document.getElementById("analysis-form");
+        const errorAlert = document.getElementById("error-alert");
+
+        // Drag and drop events
+        ["dragenter", "dragover"].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.classList.add("dragover");
+            }, false);
+        });
+
+        ["dragleave", "drop"].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.classList.remove("dragover");
+            }, false);
+        });
+
+        dropZone.addEventListener("drop", (e) => {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                updateFileDetails(files[0]);
+            }
+        });
+
+        // Click on dropzone triggers file browse
+        browseBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            fileInput.click();
+        });
+
+        dropZone.addEventListener("click", () => {
+            fileInput.click();
+        });
+
+        fileInput.addEventListener("change", () => {
+            if (fileInput.files.length > 0) {
+                updateFileDetails(fileInput.files[0]);
+            }
+        });
+
+        removeBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            resetFileInput();
+        });
+
+        function updateFileDetails(file) {
+            // Hide alert if visible
+            if (errorAlert) {
+                errorAlert.style.display = "none";
+            }
+            
+            // Basic extension check
+            if (!file.name.toLowerCase().endswith || !file.name.toLowerCase().endsWith(".wav")) {
+                alert("Invalid format. Please upload a WAV (.wav) audio recording.");
+                resetFileInput();
+                return;
+            }
+
+            // Size check (5MB limit)
+            const maxSize = 5 * 1024 * 1024;
+            if (file.size > maxSize) {
+                alert("File size exceeds 5 MB. Please choose a smaller recording.");
+                resetFileInput();
+                return;
+            }
+
+            selectedFilename.textContent = file.name;
+            fileBox.style.display = "flex";
+            
+            // Hide browse buttons and prompts
+            browseBtn.style.display = "none";
+            document.querySelector(".drop-text").style.display = "none";
+            document.querySelector(".format-text").style.display = "none";
+            document.querySelector(".upload-icon").style.display = "none";
+        }
+
+        function resetFileInput() {
+            fileInput.value = "";
+            fileBox.style.display = "none";
+            browseBtn.style.display = "inline-block";
+            document.querySelector(".drop-text").style.display = "block";
+            document.querySelector(".format-text").style.display = "block";
+            document.querySelector(".upload-icon").style.display = "block";
+        }
+
+        // Form submission checks
+        form.addEventListener("submit", (e) => {
+            if (!fileInput.value) {
+                e.preventDefault();
+                alert("Please select or drop a WAV file before analyzing.");
+            }
+        });
+    </script>
+</body>
+</html>

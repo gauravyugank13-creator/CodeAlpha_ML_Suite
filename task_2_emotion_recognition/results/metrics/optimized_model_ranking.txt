@@ -1,0 +1,25 @@
+==========================================================
+    Task 2 Speech Emotion Optimized Leaderboard Ranking   
+==========================================================
+
+Primary Selection Metric: Weighted F1-score
+Secondary Selection Metric: Accuracy
+
+1. Model: svm
+   - Weighted F1-Score: 0.592526
+   - Accuracy:          0.593750
+   - Weighted Precision: 0.605237
+   - Weighted Recall:    0.593750
+
+2. Model: mlp
+   - Weighted F1-Score: 0.571789
+   - Accuracy:          0.579861
+   - Weighted Precision: 0.578059
+   - Weighted Recall:    0.579861
+
+3. Model: random_forest
+   - Weighted F1-Score: 0.529218
+   - Accuracy:          0.545139
+   - Weighted Precision: 0.546711
+   - Weighted Recall:    0.545139
+

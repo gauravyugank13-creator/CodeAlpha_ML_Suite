@@ -1,0 +1,39 @@
+==========================================================
+        RAVDESS Speech Dataset Verification Report       
+==========================================================
+
+Total Files Cataloged:   1440
+Valid Waveform Samples:  1440
+Corrupted File Count:   0
+Duplicate Files Found:  1
+Unsupported Extensions: 0
+
+Audio Length Statistics (seconds):
+  - Minimum Duration: 2.936s
+  - Maximum Duration: 5.272s
+  - Average Duration: 3.701s (± 0.337s)
+
+Vocal Channel Sample Rates:
+  - 48000 Hz: 1440 clips
+
+Emotion Distribution:
+  - angry     : 192 (13.33%)
+  - calm      : 192 (13.33%)
+  - disgust   : 192 (13.33%)
+  - fearful   : 192 (13.33%)
+  - happy     : 192 (13.33%)
+  - neutral   : 96 (6.67%)
+  - sad       : 192 (13.33%)
+  - surprised : 192 (13.33%)
+
+Gender Class Distribution:
+  - female    : 720 (50.00%)
+  - male      : 720 (50.00%)
+
+Emotional Intensity Balance:
+  - normal    : 768 (53.33%)
+  - strong    : 672 (46.67%)
+
+Duplicate Files Listing:
+  - 03-01-03-01-02-02-07.wav (Duplicate of: 03-01-03-01-02-01-07.wav)
+

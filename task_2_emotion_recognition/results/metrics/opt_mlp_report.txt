@@ -1,0 +1,18 @@
+==========================================================
+    Task 2 Speech Emotion Recognition Evaluation Report  
+==========================================================
+
+              precision    recall  f1-score   support
+
+     neutral       0.62      0.61      0.61        38
+        calm       0.70      0.84      0.76        38
+       happy       0.60      0.63      0.62        38
+         sad       0.49      0.67      0.57        39
+       angry       0.47      0.46      0.47        39
+     fearful       0.38      0.32      0.34        19
+     disgust       0.55      0.32      0.40        38
+   surprised       0.72      0.67      0.69        39
+
+    accuracy                           0.58       288
+   macro avg       0.57      0.56      0.56       288
+weighted avg       0.58      0.58      0.57       288

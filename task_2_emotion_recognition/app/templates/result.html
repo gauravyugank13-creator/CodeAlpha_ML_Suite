@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VibeVoice - Analysis Results</title>
+    <!-- Google Fonts Outfit & FontAwesome Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <!-- Background Radial Glows -->
+    <div class="background-glow-left"></div>
+    <div class="background-glow-right"></div>
+
+    <div class="dashboard-container">
+        <!-- App Header Area -->
+        <header class="app-header">
+            <div class="logo-area">
+                <div class="logo-icon">
+                    <i class="fa-solid fa-microphone-lines"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>VibeVoice</h1>
+                    <p>Acoustic Speech Emotion Classifier</p>
+                </div>
+            </div>
+            <a href="{{ url_for('index') }}" class="header-badge" style="text-decoration: none; background: rgba(139, 92, 246, 0.08); border-color: rgba(139, 92, 246, 0.2); color: var(--primary-neon);">
+                <i class="fa-solid fa-rotate-left"></i>
+                <span>Analyze New File</span>
+            </a>
+        </header>
+
+        <!-- Results Display Glass Card -->
+        <main class="glass-card">
+            <!-- Win Badge Header -->
+            <div class="result-header">
+                <h2>Predicted Emotion</h2>
+                <div class="result-badge">{{ predicted_emotion }}</div>
+            </div>
+
+            <!-- Quantitative Metrics Metadata Rows -->
+            <div class="result-metrics">
+                <div class="metric-card">
+                    <div class="metric-label">Confidence Rating</div>
+                    <div class="metric-val confidence">{{ "%.2f"|format(confidence_score) }}%</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Filename</div>
+                    <div class="metric-val" title="{{ filename }}">{{ filename }}</div>
+                </div>
+            </div>
+
+            <!-- Probability Distributions Graph List -->
+            <div class="probabilities-section">
+                <h3 class="prob-section-title">Class Probabilities Breakdown</h3>
+                <div class="prob-list">
+                    {% for emotion, probability in probabilities.items() %}
+                    <div class="prob-row {% if emotion == predicted_emotion %}winning-row{% endif %}">
+                        <span class="prob-label">{{ emotion }}</span>
+                        <div class="prob-track">
+                            <div class="prob-fill" style="width: {{ probability }}%;"></div>
+                        </div>
+                        <span class="prob-val">{{ "%.1f"|format(probability) }}%</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Footer Details & Back Button -->
+            <div style="display: flex; flex-direction: column; gap: 15px;">
+                <div style="font-size: 11px; color: var(--text-muted); text-align: center; border-top: 1px solid var(--border-color); padding-top: 12px;">
+                    <span>Report Compiled: {{ timestamp }} | Locked Execution Context</span>
+                </div>
+                <a href="{{ url_for('index') }}" class="btn-back">
+                    <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+                </a>
+            </div>
+        </main>
+
+        <footer class="app-footer">
+            <p>&copy; 2026 CodeAlpha ML Suite - Speech Emotion Recognition Dashboard. Locked isolated environment.</p>
+        </footer>
+    </div>
+</body>
+</html>

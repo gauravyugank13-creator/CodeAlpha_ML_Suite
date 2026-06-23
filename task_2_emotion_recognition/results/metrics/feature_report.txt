@@ -1,0 +1,42 @@
+==========================================================
+    RAVDESS Speech Preprocessing & Feature Extraction     
+==========================================================
+
+Data Dimensions:
+  - Master Features Matrix: (1440, 374)
+  - Master Labels Vector:   (1440,)
+  - X_train Shape:          (1152, 374)
+  - X_test Shape:           (288, 374)
+  - y_train Shape:          (1152,)
+  - y_test Shape:           (288,)
+
+Acoustic Preprocessing Audits:
+  - Avg Original Clip Length: 3.701s
+  - Avg Trimmed Silence Clip Length: 1.871s
+  - Avg Trimming Percentage:  49.78%
+  - Avg Normalisation Scaling Factor: 16.942
+  - Fixed Duration Padding/Truncating: 3.0s at 22050Hz
+
+Feature Vectors Configuration:
+  - MFCC (Temporal Mean + Std):   80 features (feats 0-79)
+  - Chroma (Temporal Mean + Std): 24 features (feats 80-103)
+  - Mel-Spectrogram (Mean + Std): 256 features (feats 104-359)
+  - Spectral Contrast (Mean + Std): 14 features (feats 360-373)
+  - Total Feature Size:           374 features
+
+Split Class Balances (Emotion Stratification):
+  Emotion      | Train Count  | Train %    | Test Count   | Test %    
+-----------------------------------------------------------------
+  neutral      | 77           | 6.68      % | 19           | 6.60      %
+  calm         | 154          | 13.37     % | 38           | 13.19     %
+  happy        | 153          | 13.28     % | 39           | 13.54     %
+  sad          | 154          | 13.37     % | 38           | 13.19     %
+  angry        | 154          | 13.37     % | 38           | 13.19     %
+  fearful      | 153          | 13.28     % | 39           | 13.54     %
+  disgust      | 154          | 13.37     % | 38           | 13.19     %
+  surprised    | 153          | 13.28     % | 39           | 13.54     %
+
+Data Verification Audits:
+  - NaN values found: 0
+  - Infinite values found: 0
+  - Overall Audit Status: PASS

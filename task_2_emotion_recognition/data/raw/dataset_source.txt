@@ -1,0 +1,14 @@
+Ryerson Audio-Visual Database of Emotional Speech and Song (RAVDESS)
+
+Dataset Source URL:
+https://zenodo.org/records/1188976/files/Audio_Speech_Actors_01-24.zip
+
+Zenodo DOI Reference:
+https://doi.org/10.5281/zenodo.1188976
+
+Scientific Publication Citation:
+Livingstone SR, Russo FA (2018) The Ryerson Audio-Visual Database of Emotional Speech and Song (RAVDESS): A dynamic, multimodal set of facial and vocal expressions in North American English. PLoS ONE 13(5): e0196391. https://doi.org/10.1371/journal.pone.0196391
+
+License details:
+Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)
+You are free to share and adapt the material under the condition of giving appropriate credit.

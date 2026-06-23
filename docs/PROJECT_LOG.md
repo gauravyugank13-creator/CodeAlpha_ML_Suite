@@ -536,3 +536,277 @@ task_1_credit_scoring/
 - ✅ **Browser client-side validation:** Verified HTML5 and JavaScript bounds validation (blocks invalid age, duration, credit size).
 - ✅ **Server-side sanitization:** Confirmed incorrect categorical values or empty elements return friendly user-facing alert notifications.
 - ✅ **Workspace isolation check:** Verified no files or configurations in `task_2_emotion_recognition` or `task_3_handwritten_character_recognition` were touched.
+
+---
+
+## [2026-06-23 15:35:00 +05:30] Phase 12 (Task 2 — Phase 1): Speech Emotion Recognition Initialization
+
+### Files Created
+- `task_2_emotion_recognition/README.md`
+- `task_2_emotion_recognition/requirements_task2.txt`
+- `task_2_emotion_recognition/src/__init__.py`
+- `task_2_emotion_recognition/src/config.py`
+- `task_2_emotion_recognition/src/data_loader.py`
+- `task_2_emotion_recognition/src/audio_preprocessing.py`
+- `task_2_emotion_recognition/src/feature_extraction.py`
+- `task_2_emotion_recognition/src/model_builder.py`
+- `task_2_emotion_recognition/src/trainer.py`
+- `task_2_emotion_recognition/src/evaluator.py`
+- `task_2_emotion_recognition/src/predictor.py`
+- `task_2_emotion_recognition/validate_initialization.py`
+
+### Validation Checks Completed
+- ✅ **Folder setup verify:** Confirmed expected folder structure created.
+- ✅ **Import verification check:** Asserted that all python skeleton files load without error or training overhead.
+- ✅ **Isolation rule validation:** Verified zero files outside `task_2_emotion_recognition/` were modified.
+
+---
+
+## [2026-06-23 16:15:00 +05:30] Phase 13 (Task 2 — Phase 2): Speech Emotion Dataset Ingestion and Validation
+
+### Files Created/Modified
+- `task_2_emotion_recognition/src/data_loader.py` [MODIFY] (Implemented Zenodo down/extract and RAVDESS name parser)
+- `task_2_emotion_recognition/data/raw/dataset_source.txt` [NEW] (Reference URLs, DOI, citation rules)
+- `task_2_emotion_recognition/dataset_info.md` [NEW] (Detailed name parsing guidelines and statistics mappings)
+- `task_2_emotion_recognition/validate_dataset.py` [NEW] (Run download, MD5 checks, plot generation, and reporting)
+
+### Verified Speech Statistics
+- **Total Cataloged Files:** 1,440 wav audio files.
+- **Valid Waveforms:** 1,440 (all files successfully opened by soundfile).
+- **Corrupted Count:** 0.
+- **Duplicates Found:** 1 (`03-01-03-01-02-02-07.wav` checksum matched duplicate of `03-01-03-01-02-01-07.wav`).
+- **Audio Duration Profile:** min = 2.936s, max = 5.272s, mean = 3.701s (± 0.337s).
+- **Class Distributions:** Perfectly balanced gender splits (720 male, 720 female) and emotion categories (192 clips per emotion for 7 categories, and 96 clips for neutral).
+
+### Generated Plots & Reports
+- **Visual Plots (results/plots/):**
+  - `emotion_distribution.png`: Count per emotion category.
+  - `actor_distribution.png`: Count per actor (60 clips each).
+  - `duration_distribution.png`: Duration lengths distribution histogram.
+- **Quantitative Text Report (results/metrics/):**
+  - `dataset_report.txt`: Summary of counts, durations, classes, and identified duplicate paths.
+
+### Validation Checks Completed
+- ✅ **Dataset validation execution:** Standalone runner `validate_dataset.py` ran successfully.
+- ✅ **Workspace isolation check:** Verified no files or configurations in `task_1_credit_scoring/` or `task_3_handwritten_character_recognition/` were modified.
+
+---
+
+## [2026-06-23 16:30:00 +05:30] Phase 14 (Task 2 — Phase 3): Audio Preprocessing and Feature Extraction Pipeline
+
+### Files Created/Modified
+- `task_2_emotion_recognition/src/feature_extraction.py` [MODIFY] (Upgraded to extract both temporal mean and standard deviation vectors)
+- `task_2_emotion_recognition/validate_features.py` [NEW] (Pipeline orchestrator script that loads, cleans, extracts, and splits the data)
+- `task_2_emotion_recognition/data/processed/features.csv` [NEW] (Tabular features, actor metadata, and target classes)
+- `task_2_emotion_recognition/data/processed/features.npy` [NEW] (Unified acoustic features matrix, size 1440x374)
+- `task_2_emotion_recognition/data/processed/labels.npy` [NEW] (Acoustic labels vector, size 1440)
+- `task_2_emotion_recognition/data/processed/X_train.npy` [NEW] (Training split features, size 1152x374)
+- `task_2_emotion_recognition/data/processed/X_test.npy` [NEW] (Testing split features, size 288x374)
+- `task_2_emotion_recognition/data/processed/y_train.npy` [NEW] (Training split labels, size 1152)
+- `task_2_emotion_recognition/data/processed/y_test.npy` [NEW] (Testing split labels, size 288)
+
+### Audio Preprocessing & Cleaning Statistics
+- **Clip Truncating:** Formatted raw audio clips to exact 3.0s duration at 22,050 Hz.
+- **Trimming Margin Silence:** Cleaned silences at clip boundaries, reducing average clip length from 3.701s to 1.871s (average reduction of 49.78%).
+- **Scaling Normalisation:** Applied peak amplitude scaling to standard max value 1.0 (average scaling multiplier: 16.942).
+
+### Acoustic Descriptor Properties
+- **MFCC (40 Coefficients temporal mean + std):** 80 features.
+- **Chroma (12 pitch bins temporal mean + std):** 24 features.
+- **Mel Spectrogram (128 bands temporal mean + std):** 256 features.
+- **Spectral Contrast (7 bands temporal mean + std):** 14 features.
+- **Total Combined Features:** 374 variables.
+
+### Generated Plots & Reports
+- **Visual Profiling (results/plots/):**
+  - `emotion_distribution_split.png`: Train (1,152 clips) vs Test (288 clips) stratified category balances.
+  - `feature_variance_distribution.png`: Histogram profiling variance ratios across all 374 feature columns.
+  - `feature_correlation_heatmap.png`: Pearson correlation matrix mapping the 15 features with highest variance.
+- **Quantitative Metrics Log (results/metrics/):**
+  - `feature_report.txt`: Matrix shapes, preprocessing ratios, NaNs counts, and class split balances.
+
+### Validation Checks Completed
+- ✅ **Matrix sizes check:** Verified exact split counts (1,152 train, 288 test) and feature sizes (374).
+- ✅ **Anomalies audit check:** Confirmed 0 NaN values and 0 infinite values inside all arrays.
+- ✅ **Stratification balance check:** Verified target emotion proportions remain identical between splits.
+- ✅ **Workspace isolation check:** Confirmed zero files outside `task_2_emotion_recognition/` were modified.
+
+---
+
+## [2026-06-23 16:35:00 +05:30] Phase 15 (Task 2 — Phase 4): Model Training and Selection
+
+### Files Created/Modified
+- `task_2_emotion_recognition/src/model_builder.py` [MODIFY] (Added class_weight="balanced" to SVM, configured MLP architecture defaults hidden_layer_sizes=(256, 128) and max_iter=500)
+- `task_2_emotion_recognition/src/trainer.py` [MODIFY] (Added save_training_metadata interface method)
+- `task_2_emotion_recognition/train_models.py` [NEW] (Coordinator script that fits SVM, RF, and MLP, compares metrics, ranks models, generates plots, and serializes the best model)
+- `task_2_emotion_recognition/validate_models.py` [NEW] (Validation script checking model file existence, successful unpickling, and inference prediction correctness)
+
+### Model Evaluation Leaderboard
+Scores computed on the 288 test split samples:
+
+| Rank | Model Name | Accuracy | Weighted Precision | Weighted Recall | Weighted F1-Score |
+| :--- | :--- | :---: | :---: | :---: | :---: |
+| **1** | **MLP (Winning Model)** | **0.5729** | **0.5855** | **0.5729** | **0.5744** |
+| **2** | Random Forest | 0.5417 | 0.5477 | 0.5417 | 0.5359 |
+| **3** | SVM | 0.4757 | 0.5175 | 0.4757 | 0.4842 |
+
+*Selected final model:* `mlp` (ranked highest on primary metric Weighted F1-score).
+
+### Saved Checkpoints & Visuals
+- **winning model checkpoint:** `models/final_emotion_model.joblib`
+- **individual classification reports:**
+  - `results/metrics/svm_report.txt`
+  - `results/metrics/random_forest_report.txt`
+  - `results/metrics/mlp_report.txt`
+- **leaderboard and comparison matrix:**
+  - `results/metrics/model_comparison.csv`
+  - `results/metrics/model_ranking.txt`
+  - `results/metrics/svm_training_metadata.json`
+  - `results/metrics/random_forest_training_metadata.json`
+  - `results/metrics/mlp_training_metadata.json`
+- **charts and heatmaps (results/plots/):**
+  - `confusion_matrix_svm.png`
+  - `confusion_matrix_random_forest.png`
+  - `confusion_matrix_mlp.png`
+  - `model_metrics_comparison.png`
+
+### Validation Checks Completed
+- ✅ **Serialized model file check:** Confirmed winning MLP pipeline file exists on disk.
+- ✅ **Clean unpickling check:** Confirmed final_emotion_model.joblib reloads successfully.
+- ✅ **Inference check:** Confirmed reloaded pipeline runs execution successfully on mock sample inputs of size 374.
+- ✅ **Output validity check:** Confirmed prediction outputs fall within the 8 valid RAVDESS emotion target categories.
+- ✅ **Workspace isolation check:** Confirmed zero files outside `task_2_emotion_recognition/` and shared docs were modified.
+
+---
+
+## [2026-06-23 16:45:00 +05:30] Phase 16 (Task 2 — Phase 5): Hyperparameter Optimization and Model Selection
+
+### Files Created/Modified
+- `task_2_emotion_recognition/optimize_models.py` [NEW] (Tuning script using RandomizedSearchCV and StratifiedKFold on SVM, RF, and MLP)
+- `task_2_emotion_recognition/validate_optimized_models.py` [NEW] (Sanity check validation script for optimized model checkpoint)
+
+### Optimized Model Leaderboard
+Scores computed on the 288 test split samples:
+
+| Rank | Model Name | Accuracy | Weighted Precision | Weighted Recall | Weighted F1-Score | F1 Improvement |
+| :--- | :--- | :---: | :---: | :---: | :---: | :---: |
+| **1** | **SVM (Winning Model)** | **0.5938** | **0.6052** | **0.5938** | **0.5925** | **+10.83%** |
+| **2** | MLP | 0.5799 | 0.5781 | 0.5799 | 0.5718 | -0.26% |
+| **3** | Random Forest | 0.5451 | 0.5467 | 0.5451 | 0.5292 | -0.67% |
+
+*Selected final model:* `svm` (ranked highest on primary metric Weighted F1-score). Overwrote previous MLP baseline winner on disk.
+
+### Best Hyperparameters Found
+* **SVM**: `{'svm__C': 10, 'svm__gamma': 'scale', 'svm__class_weight': 'balanced'}`
+* **Random Forest**: `{'rf__n_estimators': 300, 'rf__min_samples_split': 2, 'rf__min_samples_leaf': 2, 'rf__max_features': 'sqrt', 'rf__max_depth': None, 'rf__class_weight': 'balanced'}`
+* **MLP**: `{'mlp__max_iter': 750, 'mlp__learning_rate_init': 0.0005, 'mlp__hidden_layer_sizes': (512, 256), 'mlp__alpha': 0.0001, 'mlp__activation': 'relu'}`
+
+### Saved Checkpoints & Visuals
+- **final model checkpoint:** `models/final_emotion_model.joblib`
+- **tuning metrics log:**
+  - `results/metrics/tuning_results.csv`
+  - `results/metrics/best_parameters.txt`
+  - `results/metrics/optimized_model_comparison.csv`
+  - `results/metrics/optimized_model_ranking.txt`
+- **individual classification reports:**
+  - `results/metrics/opt_svm_report.txt`
+  - `results/metrics/opt_random_forest_report.txt`
+  - `results/metrics/opt_mlp_report.txt`
+- **charts and heatmaps (results/plots/):**
+  - `confusion_matrix_opt_svm.png`
+  - `confusion_matrix_opt_random_forest.png`
+  - `confusion_matrix_opt_mlp.png`
+  - `tuning_performance.png`
+  - `optimization_comparison.png` (Baseline vs Optimized F1-Scores)
+  - `feature_importance_random_forest.png` (Top 15 features)
+
+### Validation Checks Completed
+- ✅ **Serialized model file check:** Confirmed winning optimized SVM pipeline exists on disk.
+- ✅ **Clean unpickling check:** Confirmed final_emotion_model.joblib reloads successfully.
+- ✅ **Inference check:** Confirmed reloaded pipeline runs execution successfully on mock sample inputs of size 374.
+- ✅ **Output validity check:** Confirmed prediction outputs fall within the 8 valid RAVDESS emotion target categories.
+- ✅ **Workspace isolation check:** Confirmed zero files outside `task_2_emotion_recognition/` and shared docs were modified.
+
+---
+
+## [2026-06-23 16:55:00 +05:30] Phase 17 (Task 2 — Phase 6): Predictor Integration
+
+### Files Created/Modified
+- `task_2_emotion_recognition/src/predictor.py` [MODIFY] (Upgraded EmotionPredictor class with file boundary validation checks, logging, and prediction schema mappings)
+- `task_2_emotion_recognition/validate_predictor.py` [NEW] (Inference serving validation runner verifying schema, ranges, logs, and exception states)
+
+### Predictor Interface Design
+* **Inference Method**: `EmotionPredictor.predict_emotion(file_path: str) -> dict`
+* **Output Format**:
+  ```python
+  {
+      "predicted_emotion": "neutral",
+      "confidence_score": 0.8239,
+      "probabilities": {
+          "angry": 0.0100,
+          "calm": 0.0354,
+          ...
+      }
+  }
+  ```
+
+### Prediction Logging Registry
+* **Registry Path**: `task_2_emotion_recognition/results/predictions/prediction_history.csv`
+* **Log Structure**: `timestamp`, `filename`, `predicted_emotion`, `confidence_score` (each transaction dynamically appends to the log file)
+
+### Exception Boundary Safeguards
+* **File Non-Existence**: Raises `FileNotFoundError` if the WAV target doesn't exist on disk.
+* **Unsupported File Format**: Raises `ValueError` for extensions other than case-insensitive `.wav`.
+* **Zero-Byte File**: Raises `ValueError` if size is 0 bytes.
+* **Format Corruption**: Raises `RuntimeError` / `ValueError` if headers or chunks are malformed.
+
+### Validation Checks Completed
+- ✅ **Clean instantiation check:** Confirmed model pipeline deserializes and reloads cleanly.
+- ✅ **Inference schema check:** Verified predicted keys, datatype formats, and emotion string bounds.
+- ✅ **Confidence range check:** Confirmed score outputs remain within $[0.0, 1.0]$.
+- ✅ **Probabilities sum check:** Confirmed values sum to approximately 1.0.
+- ✅ **Logged transaction check:** Verified prediction details are successfully written to prediction_history.csv.
+- ✅ **Boundary exception checks:** Verified correct type errors are thrown under missing, wrong format, empty, and corrupted file tests.
+- ✅ **Workspace isolation check:** Confirmed zero files outside `task_2_emotion_recognition/` and shared docs were modified.
+
+---
+
+## [2026-06-23 17:15:00 +05:30] Phase 18 (Task 2 — Phase 7): Flask Web Application Serving
+
+### Files Created/Modified
+- `task_2_emotion_recognition/app/app.py` [NEW] (Flask server application providing GET / and POST /predict)
+- `task_2_emotion_recognition/app/static/style.css` [NEW] (Responsive glassmorphic UI stylesheet with violet/teal glow)
+- `task_2_emotion_recognition/app/templates/index.html` [NEW] (Speech analyze home dashboard with drag-and-drop support)
+- `task_2_emotion_recognition/app/templates/result.html` [NEW] (Speech classification outputs view highlighting the winning class and probability bars)
+- `task_2_emotion_recognition/test_flask_app.py` [NEW] (Flask app test suite containing 6 automated unit tests)
+- `task_2_emotion_recognition/validate_flask_app.py` [NEW] (Verification script checking route maps and setup integrity)
+
+### Web App Route Endpoints
+* **GET `/`**: Renders `index.html` with file selection prompts. Accepts `error` query parameter to display friendly warning banners.
+* **POST `/predict`**:
+  - Ingests multipart files, enforcing a **5 MB size limit** (`MAX_CONTENT_LENGTH`).
+  - Implements strict validation on extension (`.wav` only) and empty selections.
+  - Temporarily saves active uploads, processes inference, deletes temporary uploads, and renders `result.html` on success.
+  - Gracefully redirects to `/` on failure.
+
+### Testing Results Summary
+All **6 tests** inside the unit test suite [test_flask_app.py](file:///c:/Users/HP/OneDrive/Desktop/CodeAlpha_ML_Suite/task_2_emotion_recognition/test_flask_app.py) passed successfully:
+* `test_homepage_loads`: Confirmed home GET `/` status is 200.
+* `test_upload_form_renders`: Confirmed upload form markup exists on the page.
+* `test_invalid_extension_rejected`: Confirmed non-WAV files redirect with warning message.
+* `test_missing_upload_file_rejected`: Confirmed empty file submission redirects with alert.
+* `test_missing_upload_parameter_rejected`: Confirmed requests missing payload parameter redirect with warning.
+* `test_valid_wav_prediction_and_logging`: Verified valid WAV file processes correctly, yields results markup, and registers transaction log row.
+
+### Validation Checks Completed
+- ✅ **Setup verification check:** Standalone runner `validate_flask_app.py` ran successfully.
+- ✅ **Route URL mappings check:** Verified `/` and `/predict` endpoints exist in URL maps.
+- ✅ **Upload size configuration check:** Confirmed 5 MB upload limit is set.
+- ✅ **Predictor integration check:** Confirmed server predictor is initialized and reloads target `final_emotion_model.joblib`.
+- ✅ **Workspace isolation check:** Confirmed zero files outside `task_2_emotion_recognition/` and shared docs were modified.
+
+
+
+
+
+

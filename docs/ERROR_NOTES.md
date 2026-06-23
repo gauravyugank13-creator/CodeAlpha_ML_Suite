@@ -387,6 +387,86 @@ To add a new error, copy and paste the markdown template below and fill in the d
   In both `app.py` and `test_flask_app.py`, dynamically resolve the path to `task_1_credit_scoring/` and prepend/append it to `sys.path` (e.g. `sys.path.insert(0, task_dir)`). This allows Python to correctly look inside `task_1_credit_scoring/` to find and resolve imports for the `src` module structure during the joblib unpickling process, regardless of the working directory the script is executed from.
 * **Status:** `[Resolved]`
 
+---
+
+### [2026-06-23] Observation: Duplicate audio file detected in RAVDESS Speech dataset
+* **Observed Flag:**
+  `03-01-03-01-02-02-07.wav` flagged as duplicate of `03-01-03-01-02-01-07.wav`.
+* **Likely Cause:**
+  MD5 checksum computations identified identical binary byte arrays for the two recordings (repetition 1 and repetition 2 of Actor 7 speaking statement 2 with a happy emotion and normal intensity). This is likely an artifact of replication copies inside the Zenodo RAVDESS Speech source archive.
+* **Mitigation:**
+  Documented the duplicate listing inside `dataset_report.txt` and `dataset_info.md`. This represents a single clip duplicate (<0.07% of the 1,440 corpus) which has zero significant impact on model performance metrics.
+* **Status:** `[Resolved - logged and profiled]`
+
+---
+
+### [2026-06-23] Observation: Variance disparities across acoustic feature families
+* **Observed Flag:**
+  Feature variances span multiple orders of magnitude (e.g. Mel Spectrogram energy bins vs. Chroma pitch energy bins).
+* **Likely Cause:**
+  Acoustic descriptors capture distinct physical properties (decibel energy power vs frequency ratios).
+* **Mitigation:**
+  To prevent models from becoming biased toward high-magnitude features, Z-score normalisation (`StandardScaler`) is built into all classifier pipelines inside `src/model_builder.py`. This ensures all 374 feature values scale to mean=0 and std=1 before estimation.
+* **Status:** `[Resolved — StandardScaler integrated in model factories]`
+
+---
+
+### [2026-06-23] Risk: MLP Neural Network Convergence Issues
+* **Observation/Risk:**
+  Multi-Layer Perceptron (MLP) classifiers can sometimes fail to converge within the maximum iterations if features are not properly scaled, or if `max_iter` is set too low (e.g. 200). This results in warnings about optimization not converging.
+* **Mitigation:**
+  1. Configured the default `max_iter` to `500` inside `src/model_builder.py` to allow the Adam optimizer adequate cycles.
+  2. Wrapped MLP in a standard `Pipeline` with `StandardScaler` as pre-scaling features stabilizes backpropagation and guarantees faster convergence.
+* **Status:** `[Resolved — MLP converged cleanly, achieving peak F1-score of 0.5744]`
+
+---
+
+### [2026-06-23] Risk: Deprecation Warning on SVM Probability Parameter
+* **Warning Observed:**
+  `FutureWarning: The probability parameter was deprecated in 1.9 and will be removed in version 1.11. Use CalibratedClassifierCV(SVC(), ensemble=False) instead of SVC(probability=True)`
+* **Root Cause:**
+  Scikit-learn 1.9 deprecated the native `probability=True` parameter on `SVC` to encourage more robust probability calibration interfaces.
+* **Mitigation:**
+  No immediate action needed as it is a warning for future scikit-learn compatibility. However, in subsequent model refactors, we can wrap the SVC in `CalibratedClassifierCV` to comply with version 1.11 specifications.
+* **Status:** `[Monitoring — non-breaking warning]`
+
+---
+
+### [2026-06-23] Risk: Seaborn barplot `palette` deprecation warning
+* **Warning Observed:**
+  `FutureWarning: Passing palette without assigning hue is deprecated and will be removed in v0.14.0. Assign the y variable to hue and set legend=False for the same effect.`
+* **Root Cause:**
+  Seaborn v0.13.0+ deprecates standard palette usage in horizontal barplots without assigning `hue` to force consistent mapping colors.
+* **Mitigation:**
+  Acknowledge the warning as non-breaking. For subsequent UI visualizations or plots (e.g. feature importances), pass `hue="Feature"` or equivalent to suppress future compatibility warnings.
+* **Status:** `[Resolved — warning logged]`
+
+---
+
+### [2026-06-23] Risk: Empty WAV Audio validation Exception mapping
+* **Observation/Risk**:
+  A 0-byte file (empty WAV file) causes `soundfile.info` to throw `LibsndfileError: Format not recognised` because it does not contain valid headers or chunks.
+  If not handled correctly, this triggers a `RuntimeError` (representing a corrupted file) instead of a `ValueError` (representing an empty file).
+* **Mitigation**:
+  Added a file size check using `os.path.getsize(file_path)` at the start of size validations. If the file size is exactly 0 bytes, we raise `ValueError("Empty audio file (contains zero bytes).")` immediately, ensuring correct exception mapping.
+* **Status**: `[Resolved]`
+
+---
+
+### [2026-06-23] Risk: Temporary upload storage accumulation leaks
+* **Observation/Risk**:
+  When processing POST `/predict` requests, uploaded audio files are saved temporarily on disk to be read by the `EmotionPredictor` service.
+  If the application fails or runs successfully but does not remove these temporary files, they accumulate and consume significant server disk space.
+* **Mitigation**:
+  Added a `finally` or standard `try-except-finally` wrapper that ensures any temporarily saved audio clip is permanently unlinked via `os.remove` immediately after predictions are completed or failed, protecting disk resources.
+* **Status**: `[Resolved]`
+
+
+
+
+
+
+
 
 
 

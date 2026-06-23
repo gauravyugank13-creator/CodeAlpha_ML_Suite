@@ -1,0 +1,24 @@
+==========================================================
+    Task 2 Speech Emotion Optimized Hyperparameters      
+==========================================================
+
+Model: svm
+  - svm__gamma: scale
+  - svm__class_weight: balanced
+  - svm__C: 10
+
+Model: random_forest
+  - rf__n_estimators: 300
+  - rf__min_samples_split: 2
+  - rf__min_samples_leaf: 2
+  - rf__max_features: sqrt
+  - rf__max_depth: None
+  - rf__class_weight: balanced
+
+Model: mlp
+  - mlp__max_iter: 750
+  - mlp__learning_rate_init: 0.0005
+  - mlp__hidden_layer_sizes: (512, 256)
+  - mlp__alpha: 0.0001
+  - mlp__activation: relu
+

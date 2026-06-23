@@ -1,0 +1,10 @@
+==========================================================
+        Optimized Random Forest Best Hyperparameters      
+==========================================================
+
+n_estimators: 100
+min_samples_split: 2
+min_samples_leaf: 8
+max_features: sqrt
+max_depth: 5
+class_weight: balanced

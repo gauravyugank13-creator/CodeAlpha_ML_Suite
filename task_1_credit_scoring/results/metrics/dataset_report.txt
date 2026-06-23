@@ -1,0 +1,35 @@
+==========================================================
+      German Credit Dataset Validation & Summary Stats    
+==========================================================
+
+Row Count (Samples): 1000
+Column Count (Features): 10
+Duplicate Count: 0
+
+Target Class Distribution (Risk):
+  - good: 700 (70.00%)
+  - bad: 300 (30.00%)
+
+Missing Value Summary Counts:
+  - Age: 0 (0.00%)
+  - Sex: 0 (0.00%)
+  - Job: 0 (0.00%)
+  - Housing: 0 (0.00%)
+  - Saving accounts: 183 (18.30%)
+  - Checking account: 394 (39.40%)
+  - Credit amount: 0 (0.00%)
+  - Duration: 0 (0.00%)
+  - Purpose: 0 (0.00%)
+  - Risk: 0 (0.00%)
+
+Feature Datatype Breakdown:
+  - Age: int64
+  - Sex: str
+  - Job: int64
+  - Housing: str
+  - Saving accounts: str
+  - Checking account: str
+  - Credit amount: int64
+  - Duration: int64
+  - Purpose: str
+  - Risk: str

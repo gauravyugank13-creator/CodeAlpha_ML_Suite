@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Credit Scoring Assessment Portal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <!-- Background glow elements -->
+    <div class="glow-orb-1"></div>
+    <div class="glow-orb-2"></div>
+
+    <div class="app-container">
+        <div class="glass-card">
+            <header>
+                <h1>Credit Scoring Assessment Portal</h1>
+                <p class="subtitle">Enter applicant financial & demographic criteria for risk classification</p>
+            </header>
+
+            <!-- Server-side validation or processing errors -->
+            {% if error %}
+            <div class="alert" id="server-error-alert">
+                <span>⚠️</span>
+                <span>{{ error }}</span>
+            </div>
+            {% endif %}
+
+            <!-- System Model Loading Failures -->
+            {% if model_error %}
+            <div class="alert" id="model-error-alert" style="background: rgba(239, 68, 68, 0.25); border-color: var(--danger-color);">
+                <span>🚨</span>
+                <span><strong>System Status Warning:</strong> {{ model_error }}. Submission is disabled.</span>
+            </div>
+            {% endif %}
+
+            <!-- Client-side error display card -->
+            <div class="alert" id="client-error-alert" style="display: none;">
+                <span>⚠️</span>
+                <span id="client-error-message"></span>
+            </div>
+
+            <form action="/predict" method="POST" id="credit-form">
+                <div class="form-grid">
+                    
+                    <!-- Age Input -->
+                    <div class="form-group">
+                        <label for="input-age">Age (Years)</label>
+                        <input type="number" id="input-age" name="Age" min="18" max="100" placeholder="e.g. 35" required>
+                    </div>
+
+                    <!-- Sex Dropdown -->
+                    <div class="form-group">
+                        <label for="input-sex">Sex / Gender</label>
+                        <select id="input-sex" name="Sex" required>
+                            <option value="" disabled selected>Select sex</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                        </select>
+                    </div>
+
+                    <!-- Job Skill Dropdown -->
+                    <div class="form-group">
+                        <label for="input-job">Job Skill Level</label>
+                        <select id="input-job" name="Job" required>
+                            <option value="" disabled selected>Select skill level</option>
+                            <option value="0">0: Unskilled and non-resident</option>
+                            <option value="1">1: Unskilled and resident</option>
+                            <option value="2">2: Skilled</option>
+                            <option value="3">3: Highly skilled</option>
+                        </select>
+                    </div>
+
+                    <!-- Housing Dropdown -->
+                    <div class="form-group">
+                        <label for="input-housing">Housing Status</label>
+                        <select id="input-housing" name="Housing" required>
+                            <option value="" disabled selected>Select housing</option>
+                            <option value="own">Owns Home</option>
+                            <option value="rent">Rents</option>
+                            <option value="free">Free / Assisted</option>
+                        </select>
+                    </div>
+
+                    <!-- Saving Accounts Dropdown -->
+                    <div class="form-group">
+                        <label for="input-saving">Saving Accounts Balance</label>
+                        <select id="input-saving" name="Saving accounts" required>
+                            <option value="" disabled selected>Select savings category</option>
+                            <option value="little">Little (< 100 DM)</option>
+                            <option value="moderate">Moderate (100 - 500 DM)</option>
+                            <option value="quite rich">Quite Rich (500 - 1000 DM)</option>
+                            <option value="rich">Rich (>= 1000 DM)</option>
+                            <option value="unknown">No Savings Account / Unknown</option>
+                        </select>
+                    </div>
+
+                    <!-- Checking Account Dropdown -->
+                    <div class="form-group">
+                        <label for="input-checking">Checking Account Balance</label>
+                        <select id="input-checking" name="Checking account" required>
+                            <option value="" disabled selected>Select checking category</option>
+                            <option value="little">Little (Debt / < 0 DM or <= 200 DM)</option>
+                            <option value="moderate">Moderate (200 - 2000 DM)</option>
+                            <option value="rich">Rich (>= 2000 DM)</option>
+                            <option value="unknown">No Checking Account / Unknown</option>
+                        </select>
+                    </div>
+
+                    <!-- Credit Amount Input -->
+                    <div class="form-group">
+                        <label for="input-credit">Credit Amount (DM)</label>
+                        <input type="number" id="input-credit" name="Credit amount" min="100" max="100000" placeholder="e.g. 5000" required>
+                    </div>
+
+                    <!-- Loan Duration Input -->
+                    <div class="form-group">
+                        <label for="input-duration">Duration (Months)</label>
+                        <input type="number" id="input-duration" name="Duration" min="1" max="120" placeholder="e.g. 24" required>
+                    </div>
+
+                    <!-- Credit Purpose Dropdown -->
+                    <div class="form-group full-width">
+                        <label for="input-purpose">Purpose of Credit</label>
+                        <select id="input-purpose" name="Purpose" required>
+                            <option value="" disabled selected>Select credit purpose</option>
+                            <option value="car">Car Purchase</option>
+                            <option value="furniture/equipment">Furniture / Equipment</option>
+                            <option value="radio/TV">Radio / Television</option>
+                            <option value="education">Education</option>
+                            <option value="business">Business Investment</option>
+                            <option value="repairs">Home/Car Repairs</option>
+                            <option value="domestic appliances">Domestic Appliances</option>
+                            <option value="vacation/others">Vacation or Other Purpose</option>
+                        </select>
+                    </div>
+
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-primary" id="btn-submit" {% if model_error %}disabled{% endif %}>
+                    Run Risk Assessment
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Client-side Validation Script -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const form = document.getElementById("credit-form");
+            const clientErrorAlert = document.getElementById("client-error-alert");
+            const clientErrorMessage = document.getElementById("client-error-message");
+
+            form.addEventListener("submit", function(event) {
+                // Clear previous client validation flags
+                clientErrorAlert.style.display = "none";
+                clientErrorMessage.textContent = "";
+
+                // Retrieve elements
+                const ageInput = document.getElementById("input-age");
+                const creditInput = document.getElementById("input-credit");
+                const durationInput = document.getElementById("input-duration");
+
+                // Parse input numbers
+                const age = parseInt(ageInput.value, 10);
+                const credit = parseInt(creditInput.value, 10);
+                const duration = parseInt(durationInput.value, 10);
+
+                let errorMsg = "";
+
+                // Validation boundaries checking
+                if (isNaN(age) || age < 18 || age > 100) {
+                    errorMsg = "Age must be an integer between 18 and 100 years.";
+                } else if (isNaN(credit) || credit < 100 || credit > 100000) {
+                    errorMsg = "Credit amount must be between 100 and 100,000 DM.";
+                } else if (isNaN(duration) || duration < 1 || duration > 120) {
+                    errorMsg = "Duration must be between 1 and 120 months.";
+                }
+
+                // If error exits, cancel form submission and show warning
+                if (errorMsg !== "") {
+                    event.preventDefault();
+                    clientErrorMessage.textContent = errorMsg;
+                    clientErrorAlert.style.display = "flex";
+                    // Scroll to top of form to view alert
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

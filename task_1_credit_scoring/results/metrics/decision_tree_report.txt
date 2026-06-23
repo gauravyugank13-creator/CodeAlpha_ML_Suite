@@ -1,0 +1,23 @@
+==========================================================
+        Classification Report: decision_tree                     
+==========================================================
+
+Model Parameters:
+  DecisionTreeClassifier(class_weight='balanced', random_state=42)
+
+Quantitative Evaluation Metrics:
+  - Accuracy:  0.6750
+  - Precision: 0.4576
+  - Recall:    0.4500
+  - F1 Score:  0.4538
+  - ROC-AUC:   0.6107
+
+Scikit-Learn Classification Report:
+              precision    recall  f1-score   support
+
+           0       0.77      0.77      0.77       140
+           1       0.46      0.45      0.45        60
+
+    accuracy                           0.68       200
+   macro avg       0.61      0.61      0.61       200
+weighted avg       0.67      0.68      0.67       200

@@ -276,4 +276,117 @@ To add a new error, copy and paste the markdown template below and fill in the d
   - Shifted the padded canvas using moments to align the digit's center of mass at the exact center (14, 14), which replicates the NIST preprocessing methodology.
 * **Status:** `[Resolved — upgraded centering algorithm implemented and verified]`
 
+---
+
+### [2026-06-23] Risk: Missing Values in German Credit Accounts
+* **Observed Risk:**
+  - `Saving accounts` column contains 183 missing values (18.30% null rate).
+  - `Checking account` column contains 394 missing values (39.40% null rate).
+  Dropping rows with missing values would reduce our small dataset by nearly 50%.
+* **Likely Cause:**
+  Many applicants do not have savings or checking accounts, or this information was not recorded.
+* **Mitigation:**
+  In the preprocessing phase, treat missing categories as a separate category value (`'unknown'`) or apply mode imputation. This maintains the full 1,000 samples for training.
+* **Status:** `[Monitoring — to be implemented in Phase 8 Preprocessing]`
+
+---
+
+### [2026-06-23] Risk: Target Class Imbalance (70% Good vs 30% Bad)
+* **Observed Risk:**
+  - Target variable `Risk` has 700 `good` instances and 300 `bad` instances.
+  - A baseline model predicting `good` for all applicants would achieve 70% accuracy but 0% recall on defaults, which is financially catastrophic.
+* **Likely Cause:**
+  Natural class imbalance in credit datasets (there are typically more solvent applicants than defaulting ones).
+* **Mitigation:**
+  1. Do not use accuracy as the primary evaluation metric. Rely on ROC-AUC, F1-score, precision, and recall.
+  2. Implement balance adjustments (e.g. `class_weight='balanced'`) in scikit-learn classifiers.
+* **Status:** `[Monitoring — to be configured in Phase 9 Model Builder and Trainer]`
+
+---
+
+### [2026-06-23] Risk: Categorical One-Hot Encoding Dimensionality Expansion
+* **Observed Risk:**
+  - One-hot encoding categorical variables (`Sex`, `Job`, `Housing`, `Saving accounts`, `Checking account`, `Purpose`, and `age_group`) expands the 10 raw features into 35 sparse dummy features.
+  - This increases sparsity and exposes linear models (like Logistic Regression) to the "curse of dimensionality" and overfitting on small datasets.
+  - Test set records with unseen categorical feature combinations might crash transformers.
+* **Mitigation:**
+  1. Configured `OneHotEncoder(handle_unknown='ignore', sparse_output=False)` so that any unseen labels encountered in inference are quietly mapped to all-zero vectors.
+  2. Implement L2 regularisation (Ridge penalty) inside Logistic Regression to penalize large weights on sparse dummy features.
+* **Status:** `[Resolved — handle_unknown configured; regularization to be tuned in Phase 9]`
+
+---
+
+### [2026-06-23] Risk: StandardScaler Assumption of Normality & Outlier Sensitivity
+* **Observed Risk:**
+  - `StandardScaler` scales numeric columns to mean=0, std=1 based on Z-scores, assuming a normal distribution.
+  - Features like `Credit amount` exhibit right-skewed log-normal shapes with heavy right-hand outlier tails.
+  - Extreme values compress the variance of standard applicant amounts, making it harder for linear decision boundaries to discriminate.
+* **Mitigation:**
+  - Standard scaling is acceptable for tree models (Decision Tree, Random Forest) since they are scale-invariant, but it can affect Logistic Regression.
+  - In Phase 9, if linear models perform poorly, we will evaluate log transforms `np.log1p(Credit amount)` or robust scalers (`RobustScaler`) that scale using quantiles and interquartile ranges.
+* **Status:** `[Monitoring — outlier skewness to be checked against model baseline scores]`
+
+---
+
+### [2026-06-23] Observation: Overfitting in Baseline Credit Scoring Models
+* **Findings:**
+  - **Decision Tree Classifier:** Suffers from severe overfitting. Default parameters build deep trees that learn training set noise. The test set ROC-AUC is only 0.6107, indicating poor generalization.
+  - **Random Forest Classifier:** Shows excellent ROC-AUC (0.7811) but still has slight overfitting. This is common when trees are grown to full depth (`max_depth=None`).
+* **Mitigation:**
+  In Phase 10, hyperparameter optimization must restrict tree growth using `max_depth`, `min_samples_split`, and `min_samples_leaf` constraints to improve generalization scores on validation folds.
+* **Status:** `[Monitoring — optimization configurations planned for Phase 10]`
+
+---
+
+### [2026-06-23] Observation: Impact of Class Weights on Baseline Classifiers
+* **Findings:**
+  - Standardizing `class_weight='balanced'` successfully forces estimators to penalize errors on minority target default instances (`bad` risk).
+  - In **Logistic Regression**, this results in a high default **Recall of 73.33%** (it catches 44 out of 60 defaults). However, it introduces false positives, dropping **Precision to 51.76%**.
+  - In **Decision Tree**, the balanced weights did not prevent overfitting, as the model splits nodes until leaf purity is achieved regardless of class frequency weights.
+* **Mitigation:**
+  Tune probability decision thresholds rather than using default `0.5` boundaries in final scoring predictors to optimize the financial trade-off between credit denials and default write-offs.
+* **Status:** `[Monitoring — threshold optimization planned for Phase 10]`
+
+---
+
+### [2026-06-23] Observation: Model-Specific Architectural Limitations
+* **Findings:**
+  - **Logistic Regression:** Assumes linear decision boundaries. While fast and interpretable, it cannot model non-linear feature interactions without manual polynomial expansion.
+  - **Decision Tree:** Inherently unstable with high variance. Tiny changes in training splits split nodes differently.
+  - **Random Forest:** Reduces variance via bagging, but acts as a black box. Discerning feature directionality is harder than viewing logistic regression odds ratios.
+* **Mitigation:**
+  Generate global feature importance plots for Random Forest in Phase 10 to check feature contribution directionality and ensure model transparency.
+* **Status:** `[Resolved — feature importance plot generated and verified]`
+
+---
+
+### [2026-06-23] Phase 10: Random Forest Optimization & Performance Trade-offs
+* **Observation:**
+  - Optimizing the Random Forest classifier using `RandomizedSearchCV` resulted in hyperparameters: `n_estimators=100`, `max_depth=5`, `min_samples_split=2`, `min_samples_leaf=8`, `max_features='sqrt'`, and `class_weight='balanced'`.
+  - While test set ROC-AUC increased to `0.7880` (baseline: `0.7811`, +0.88% relative improvement), we observed a significant shift in individual class metrics.
+* **Performance Trade-offs:**
+  - **Recall vs. Precision/Accuracy:** Catching actual default cases is far more critical and cost-effective than avoiding false alarms in credit risk assessment. By setting `class_weight='balanced'` and constraining tree growth (`max_depth=5`), the default recall improved dramatically by **+21.62%** (from `0.6167` to `0.7500`), capturing 45/60 default cases.
+  - This recall gain caused test set Precision to decrease from `0.5781` to `0.5172` (-10.53%) and Accuracy to decrease from `0.7500` to `0.7150` (-4.67%).
+  - This is an acceptable and highly desirable business tradeoff because the cost of a false negative (granting credit to an applicant who defaults) is typically 4 to 5 times higher than a false positive (refusing credit to a creditworthy applicant).
+* **Tuning Observations:**
+  - Standard baseline Random Forest trees grew to full depth (`max_depth=None`), causing high variance and overfitting to noise in the training set.
+  - The optimized model restricts depth (`max_depth=5`) and increases minimum leaf size (`min_samples_leaf=8`). This constraint simplifies decision boundaries, improving generalization as verified by stable cross-validation scores.
+* **Status:** `[Resolved — final production model selected and serialized]`
+
+---
+
+### [2026-06-23] Critical: joblib Model Load ModuleNotFoundError: No module named 'src'
+* **Error Observed:**
+  ```
+  ModuleNotFoundError: No module named 'src'
+  ```
+  Occurred when attempting to load `models/final_credit_scoring_model.joblib` using `joblib.load()` from outside the `task_1_credit_scoring/` folder.
+* **Likely Cause:**
+  The `Preprocessor` and `FeatureEngineer` custom classes were serialized inside the `src` package of `task_1_credit_scoring`. If the script loading the checkpoint runs from the parent workspace root, python's namespace resolver cannot find `src` at the root directory level since the `src` folder is inside the nested sub-package.
+* **Fix Applied:**
+  In both `app.py` and `test_flask_app.py`, dynamically resolve the path to `task_1_credit_scoring/` and prepend/append it to `sys.path` (e.g. `sys.path.insert(0, task_dir)`). This allows Python to correctly look inside `task_1_credit_scoring/` to find and resolve imports for the `src` module structure during the joblib unpickling process, regardless of the working directory the script is executed from.
+* **Status:** `[Resolved]`
+
+
+
 

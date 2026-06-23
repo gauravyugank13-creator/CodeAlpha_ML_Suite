@@ -1,0 +1,66 @@
+==========================================================
+  German Credit Preprocessing & Feature Engineering Report  
+==========================================================
+
+Original Raw Shape: (1000, 10)
+Processed Train Shape: (800, 35)
+Processed Test Shape: (200, 35)
+Total Encoded/Transformed Columns: 35
+
+Missing Value Counts Before Imputation:
+  - Age: 0
+  - Sex: 0
+  - Job: 0
+  - Housing: 0
+  - Saving accounts: 183
+  - Checking account: 394
+  - Credit amount: 0
+  - Duration: 0
+  - Purpose: 0
+  - Risk: 0
+
+Missing Value Counts After Preprocessing Pipeline:
+  - X_train transformed NaN count: 0
+  - X_test transformed NaN count: 0
+
+Engineered Features Created:
+  1. credit_per_month (Credit amount / Duration)
+  2. age_group (young, adult, middle_age, senior)
+  3. credit_to_age_ratio (Credit amount / Age)
+
+Final Feature Columns Generated:
+  [00] num__Age
+  [01] num__Credit amount
+  [02] num__Duration
+  [03] num__credit_per_month
+  [04] num__credit_to_age_ratio
+  [05] cat__Sex_female
+  [06] cat__Sex_male
+  [07] cat__Job_0
+  [08] cat__Job_1
+  [09] cat__Job_2
+  [10] cat__Job_3
+  [11] cat__Housing_free
+  [12] cat__Housing_own
+  [13] cat__Housing_rent
+  [14] cat__Saving accounts_little
+  [15] cat__Saving accounts_moderate
+  [16] cat__Saving accounts_quite rich
+  [17] cat__Saving accounts_rich
+  [18] cat__Saving accounts_unknown
+  [19] cat__Checking account_little
+  [20] cat__Checking account_moderate
+  [21] cat__Checking account_rich
+  [22] cat__Checking account_unknown
+  [23] cat__Purpose_business
+  [24] cat__Purpose_car
+  [25] cat__Purpose_domestic appliances
+  [26] cat__Purpose_education
+  [27] cat__Purpose_furniture/equipment
+  [28] cat__Purpose_radio/TV
+  [29] cat__Purpose_repairs
+  [30] cat__Purpose_vacation/others
+  [31] cat__age_group_adult
+  [32] cat__age_group_middle_age
+  [33] cat__age_group_senior
+  [34] cat__age_group_young

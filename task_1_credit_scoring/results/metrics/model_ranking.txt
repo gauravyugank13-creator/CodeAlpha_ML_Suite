@@ -1,0 +1,30 @@
+==========================================================
+        Task 1 Credit Scoring Model Ranking Report        
+==========================================================
+
+Primary evaluation hierarchy:
+  1. ROC-AUC (Core discriminative capacity)
+  2. F1 Score (Balance of precision/recall)
+  3. Recall (Minimizing defaults)
+  4. Accuracy
+
+Sorted Model Leaderboard:
+  Rank [1] random_forest
+    - ROC-AUC:   0.7811
+    - F1 Score:  0.5968
+    - Recall:    0.6167
+    - Accuracy:  0.7500
+
+  Rank [2] logistic_regression
+    - ROC-AUC:   0.7481
+    - F1 Score:  0.6069
+    - Recall:    0.7333
+    - Accuracy:  0.7150
+
+  Rank [3] decision_tree
+    - ROC-AUC:   0.6107
+    - F1 Score:  0.4538
+    - Recall:    0.4500
+    - Accuracy:  0.6750
+
+Conclusion: Selected Best Model is 'random_forest' based on evaluation metric rankings.

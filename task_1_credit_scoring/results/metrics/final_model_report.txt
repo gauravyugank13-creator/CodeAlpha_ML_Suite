@@ -1,0 +1,19 @@
+==========================================================
+    Task 1 Credit Scoring Model: Optimization Summary     
+==========================================================
+
+Performance Metrics Comparison (Baseline vs Optimized):
+
+Metric               | Baseline   | Optimized  | Abs Change   | % Improvement  
+--------------------------------------------------------------------------------
+Accuracy             | 0.7500     | 0.7150     | -0.0350      | -4.67          %
+Precision            | 0.5781     | 0.5172     | -0.0609      | -10.53         %
+Recall               | 0.6167     | 0.7500     | +0.1333      | +21.62         %
+F1 Score             | 0.5968     | 0.6122     | +0.0155      | +2.59          %
+Roc Auc              | 0.7811     | 0.7880     | +0.0069      | +0.88          %
+
+==========================================================
+Model Decision Justification:
+The optimized Random Forest model is selected for production deployment.
+Hyperparameter tuning optimized the decision boundaries, maximizing ROC-AUC
+and stabilizing default prediction recall without overfitting variables.

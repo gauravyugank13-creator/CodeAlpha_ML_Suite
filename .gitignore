@@ -42,3 +42,15 @@ lib64/
 task_3_handwritten_character_recognition/data/raw/
 task_3_handwritten_character_recognition/data/processed/
 *.npy
+
+# Audio files
+*.wav
+*.mp3
+
+# Task 1 raw/processed data paths
+task_1_credit_scoring/data/raw/
+task_1_credit_scoring/data/processed/
+
+# Task 1 runtime prediction logs
+task_1_credit_scoring/results/predictions/
+

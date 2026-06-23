@@ -1,0 +1,9 @@
+# Task 1: Credit Scoring Model dependencies
+numpy
+pandas
+scikit-learn
+matplotlib
+seaborn
+joblib
+jupyter
+ipykernel

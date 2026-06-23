@@ -1,0 +1,24 @@
+==========================================================
+        Classification Report: random_forest                     
+==========================================================
+
+Model Parameters:
+  RandomForestClassifier(class_weight='balanced', n_estimators=200,
+                       random_state=42)
+
+Quantitative Evaluation Metrics:
+  - Accuracy:  0.7500
+  - Precision: 0.5781
+  - Recall:    0.6167
+  - F1 Score:  0.5968
+  - ROC-AUC:   0.7811
+
+Scikit-Learn Classification Report:
+              precision    recall  f1-score   support
+
+           0       0.83      0.81      0.82       140
+           1       0.58      0.62      0.60        60
+
+    accuracy                           0.75       200
+   macro avg       0.70      0.71      0.71       200
+weighted avg       0.76      0.75      0.75       200

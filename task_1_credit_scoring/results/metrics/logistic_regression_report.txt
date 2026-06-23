@@ -1,0 +1,23 @@
+==========================================================
+        Classification Report: logistic_regression                     
+==========================================================
+
+Model Parameters:
+  LogisticRegression(class_weight='balanced', max_iter=5000, random_state=42)
+
+Quantitative Evaluation Metrics:
+  - Accuracy:  0.7150
+  - Precision: 0.5176
+  - Recall:    0.7333
+  - F1 Score:  0.6069
+  - ROC-AUC:   0.7481
+
+Scikit-Learn Classification Report:
+              precision    recall  f1-score   support
+
+           0       0.86      0.71      0.78       140
+           1       0.52      0.73      0.61        60
+
+    accuracy                           0.71       200
+   macro avg       0.69      0.72      0.69       200
+weighted avg       0.76      0.71      0.73       200
